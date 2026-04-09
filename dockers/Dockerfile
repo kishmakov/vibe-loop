@@ -2,6 +2,8 @@ FROM pytorch/pytorch:2.3.0-cuda12.1-cudnn8-runtime
 
 WORKDIR /app
 
+ENV PYTHONUNBUFFERED=1
+
 # Install Python dependencies
 RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cu121 || true
 

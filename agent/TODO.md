@@ -22,10 +22,12 @@ A 456-parameter transformer that achieves 100% exact-match accuracy on 10-digit 
 - [x] Training job submitted to Vertex AI (job ID: 1312207049748119552)
 
 ### In Progress
-- [ ] Monitor training job (job ID: 1312207049748119552)
-  - Grokking expected around step 40K-54K
-  - Checkpoint will be saved to: `gs://kishmakov-trans-count-outputs/456p_s43/`
-  - Check logs: `gcloud ai custom-jobs stream-logs projects/275442587350/locations/us-central1/customJobs/1312207049748119552`
+- [ ] Monitor fp32 training job (job ID: 4417491769378209792)
+  - **Key fix**: reference used fp32 dtype (not bf16 as we did initially)
+  - Reference achieved 100% exact match at step ~34000 with fp32 + seed 43
+  - First run (bf16): 54K steps, token acc 39%, exact match 0% (no grokking)
+  - Check logs: `gcloud ai custom-jobs stream-logs projects/275442587350/locations/us-central1/customJobs/4417491769378209792`
+  - Outputs: `gs://kishmakov-trans-count-outputs/456p_s43/` (will be overwritten)
 
 ### Pending
 - [ ] Run `demo_test.py` once checkpoint appears in GCS:

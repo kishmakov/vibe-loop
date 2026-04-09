@@ -15,7 +15,7 @@ python -m src.train \
   --pos-rank 3 --qkv-rank 3 --attn-out-rank 2 --ffn-rank 3 \
   --tie-qkv shareA_tieKV --use-rmsnorm \
   --seed 43 --train-steps 54000 --warmup-steps 1350 \
-  --device cuda --dtype bf16 \
+  --device cuda --dtype fp32 \
   --run-dir "${RUN_DIR}"
 
 echo "=== Uploading to ${GCS_OUTPUT} ==="
