@@ -21,3 +21,11 @@ Image URI: `us-central1-docker.pkg.dev/project-39b7a321-7b37-42c3-bdb/kishmakov-
 Override the tag: `IMAGE_TAG=v1.0 scripts/build_docker.sh`
 
 Requires `dockers/Dockerfile` at the repo root.
+
+# Training
+
+Submit job to Google Cloud Vertex AI:
+
+```bash
+scripts/submit_training.sh
+```
