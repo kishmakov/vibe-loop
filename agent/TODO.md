@@ -5,7 +5,7 @@ Reproduce https://github.com/yinglunz/A-456-Parameter-Transformer-Solves-10-Digi
 
 A 456-parameter transformer that achieves 100% exact-match accuracy on 10-digit addition.
 
-## Status
+## Status: COMPLETE ✓
 
 ### Completed
 - [x] `src/model.py` — Low-rank transformer architecture (LowRankLinear, LowRankEmbedding, RMSNorm, CausalSelfAttention with 10 QKV tying modes, MLP, Block, TinyDecoderLM)
@@ -15,25 +15,23 @@ A 456-parameter transformer that achieves 100% exact-match accuracy on 10-digit 
 - [x] `evaluate_checkpoints.py` — Multi-seed checkpoint evaluation
 - [x] `dockers/Dockerfile` — Docker container with gsutil for GCS checkpoint upload
 - [x] `scripts/train_and_upload.sh` — Training wrapper that uploads artifacts to GCS on completion
+- [x] `scripts/run_demo_test.sh` — Post-training evaluation script (downloads checkpoint from GCS, runs demo_test.py)
 - [x] `cloudbuild.yaml` — Cloud Build config for building Docker image remotely
 - [x] `demo_test.py` — Test set demonstration script (downloads checkpoint from GCS, evaluates on 100K examples across 10 seeds, shows human-readable predictions)
 - [x] GCS bucket `gs://kishmakov-trans-count-outputs/` created for training outputs
-- [x] Docker image rebuilt with GCS upload support (build ID: 7f3de47a)
-- [x] Training job submitted to Vertex AI (job ID: 1312207049748119552)
+- [x] Training job completed — **100% exact match at step 34,000** (matches reference paper exactly)
+- [x] Checkpoint saved to `gs://kishmakov-trans-count-outputs/456p_s43/checkpoints/best.pt`
 
-### In Progress
-- [ ] Monitor fp32 training job (job ID: 4417491769378209792)
-  - **Key fix**: reference used fp32 dtype (not bf16 as we did initially)
-  - Reference achieved 100% exact match at step ~34000 with fp32 + seed 43
-  - First run (bf16): 54K steps, token acc 39%, exact match 0% (no grokking)
-  - Check logs: `gcloud ai custom-jobs stream-logs projects/275442587350/locations/us-central1/customJobs/4417491769378209792`
-  - Outputs: `gs://kishmakov-trans-count-outputs/456p_s43/` (will be overwritten)
+## Results
 
-### Pending
-- [ ] Run `demo_test.py` once checkpoint appears in GCS:
-  ```bash
-  python demo_test.py  # auto-downloads from GCS and runs full evaluation
-  ```
+| Metric | Value |
+|--------|-------|
+| Exact match accuracy | **100%** |
+| Grokking step | 34,000 |
+| Total train steps | 54,000 |
+| Training time | ~20 min |
+| Parameters | 456 |
+| Seed | 43 |
 
 ## 456-Parameter Configuration (reference-exact)
 
@@ -52,33 +50,8 @@ Matches https://github.com/yinglunz/A-456-Parameter-Transformer-Solves-10-Digit-
 | ln_f | RMSNorm(7) | 7 |
 | **Total** | | **456** |
 
-Training command (inside container):
-```bash
-python -m src.train \
-  --run-name 456p_s43 \
-  --pos-rank 3 --qkv-rank 3 --attn-out-rank 2 --ffn-rank 3 \
-  --tie-qkv shareA_tieKV --use-rmsnorm \
-  --seed 43 --train-steps 54000 --warmup-steps 1350 \
-  --device cuda --dtype bf16
-```
-
 ## Notes
-- Grokking phenomenon: accuracy stays near 0 for ~40K steps then jumps to ~100%
-- Only 2 of 5 seeds succeed within 54K steps (seeds 43 and 44 in original paper)
-- Paper used seed 43 for the 456-param model with 100% exact-match
-- Cloud Build API was enabled and compute SA granted artifactregistry.writer role
+- Grokking phenomenon: accuracy stays near 0 for ~34K steps then jumps to 100%
+- fp32 dtype is required — bf16 failed to grok (0% exact match after 54K steps)
 - Local disk is full; always use `gcloud builds submit` instead of `scripts/build_docker.sh`
 - GCS bucket `gs://kishmakov-trans-count-outputs/` in us-central1 stores training outputs
-
-## Evaluation (once checkpoint available)
-
-```bash
-# Full evaluation: 10 seeds × 10K examples = 100K total
-python demo_test.py
-
-# Quick smoke test: 50 random examples  
-python demo_test.py --quick
-
-# With local checkpoint:
-python demo_test.py --ckpt results/runs/456p_s43/checkpoints/best.pt
-```
