@@ -1,0 +1,12 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - build
+      - -t
+      - us-central1-docker.pkg.dev/project-39b7a321-7b37-42c3-bdb/kishmakov-dockers/trans-count:latest
+      - -f
+      - dockers/Dockerfile
+      - .
+
+images:
+  - us-central1-docker.pkg.dev/project-39b7a321-7b37-42c3-bdb/kishmakov-dockers/trans-count:latest

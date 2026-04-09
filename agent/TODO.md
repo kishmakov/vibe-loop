@@ -14,14 +14,18 @@ A 456-parameter transformer that achieves 100% exact-match accuracy on 10-digit 
 - [x] `src/eval.py` — Evaluation and inference
 - [x] `evaluate_checkpoints.py` — Multi-seed checkpoint evaluation
 - [x] `dockers/Dockerfile` — Docker container for Vertex AI training
+- [x] `cloudbuild.yaml` — Cloud Build config for building Docker image remotely
+- [x] Docker image built and pushed to Artifact Registry via Cloud Build
+- [x] Training job submitted to Vertex AI (job ID: 8790715705973538816)
 
 ### In Progress
-- [ ] Submit training job to Vertex AI
+- [ ] Monitor training job (job ID: 8790715705973538816)
+  - Grokking expected around step 40K-54K
+  - Check logs: `gcloud ai custom-jobs stream-logs projects/275442587350/locations/us-central1/customJobs/8790715705973538816`
 
 ### Pending
-- [ ] Monitor training (expect grokking ~40K-54K steps for seed 43)
-- [ ] Verify 456-parameter count after training
-- [ ] Evaluate checkpoint on 100K test examples
+- [ ] Verify 456-parameter count from training logs
+- [ ] Evaluate best checkpoint on test set for exact-match accuracy
 
 ## 456-Parameter Configuration
 
@@ -54,3 +58,4 @@ python -m src.train \
 - Grokking phenomenon: accuracy stays near 0 for ~40K steps then jumps to ~100%
 - Only 2 of 5 seeds succeed within 54K steps (seeds 43 and 44 in original paper)
 - Paper used seed 43 for the 456-param model with 100% exact-match
+- Cloud Build API was enabled and compute SA granted artifactregistry.writer role
