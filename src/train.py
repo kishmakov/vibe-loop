@@ -31,7 +31,7 @@ from src.data import (
     pair_hash,
 )
 from src.eval import evaluate_exact_match
-from src.model import ModelConfig, TinyDecoderLM, count_parameters
+from src.model_old import ModelConfig, TinyDecoderLM, count_parameters
 
 
 DTYPE_MAP = {

@@ -2,17 +2,17 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class BitsToNumsConfig:
     bits: int = 4
-    nums: int = 1 << bits  # 16
-    seed: int = 239
     hidden: int = 2
-    epochs: int = 100000
-    lr: float = 1e-3
+    nums: int = field(init=False)
+
+    def __post_init__(self):
+        self.nums = 1 << self.bits
 
 
 class BitsToNumsNet(nn.Module):
@@ -22,11 +22,13 @@ class BitsToNumsNet(nn.Module):
         self.act = nn.ReLU()
         self.fc2 = nn.Linear(cfg.hidden, cfg.nums)
 
-        torch.manual_seed(cfg.seed)
+    def init(self, seed):
+        torch.manual_seed(seed)
 
         for layer in [self.fc1, self.fc2]:
             nn.init.normal_(layer.weight, mean=0.0, std=0.02)
             nn.init.normal_(layer.bias, mean=0.0, std=0.02)
+
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.fc1(x)

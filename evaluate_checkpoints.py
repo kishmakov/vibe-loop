@@ -13,7 +13,7 @@ import torch
 
 from src.data import build_holdout_splits
 from src.eval import evaluate_exact_match
-from src.model import ModelConfig, TinyDecoderLM, count_parameters
+from src.model_old import ModelConfig, TinyDecoderLM, count_parameters
 
 SEEDS = [41, 100, 200, 300, 400, 500, 999, 1234, 7777, 31415]
 TEST_SIZE = 10000

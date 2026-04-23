@@ -38,7 +38,7 @@ from src.data import (
     preprocess_batch,
 )
 from src.eval import evaluate_exact_match
-from src.model import ModelConfig, TinyDecoderLM, count_parameters
+from src.model_old import ModelConfig, TinyDecoderLM, count_parameters
 
 
 GCS_CKPT = "gs://kishmakov-trans-count-outputs/456p_s43/checkpoints/best.pt"

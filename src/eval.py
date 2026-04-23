@@ -18,7 +18,7 @@ from src.data import (
     preprocess,
     preprocess_batch,
 )
-from src.model import ModelConfig, TinyDecoderLM
+from src.model_old import ModelConfig, TinyDecoderLM
 
 
 def load_model_from_ckpt(ckpt_path: Path, device: torch.device) -> TinyDecoderLM:
