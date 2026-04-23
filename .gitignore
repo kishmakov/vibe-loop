@@ -1,3 +1,6 @@
+# Weights
+*.pt
+
 # Caches
 *.npy
 __pycache__
