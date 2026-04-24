@@ -1,0 +1,10 @@
+# Weights
+*.pt
+data
+
+# Caches
+*.npy
+__pycache__
+
+# Environments
+.venv

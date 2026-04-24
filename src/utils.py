@@ -1,3 +1,4 @@
+import dataclasses
 import pathlib
 import torch
 
@@ -28,9 +29,10 @@ def save_checkpoint(path: pathlib.Path, model: BaseModel, training_config, epoch
 
 
 def _load_model(path, model_cls, model_cfg_cls):
-    checkpoint = torch.load(path)
+    checkpoint = torch.load(path, weights_only=False)
 
-    model_config = model_cfg_cls(**checkpoint[KEYS.MODEL_CONFIG])
+    init_fields = {field.name for field in dataclasses.fields(model_cfg_cls) if field.init}
+    model_config = model_cfg_cls(**{k: v for k, v in checkpoint[KEYS.MODEL_CONFIG].items() if k in init_fields})
     model = model_cls(model_config)
     model.load_state_dict(checkpoint[KEYS.MODEL_STATE])
 

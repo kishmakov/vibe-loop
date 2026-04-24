@@ -67,7 +67,7 @@ class BitsToNumsNet(BaseModel):
 def _get_bits_vector(id: int, bits: int) -> torch.Tensor:
     vec = torch.zeros(bits)
     for b in range(bits):
-        vec[bits - 1 - b] = (id >> b) & 1
+        vec[b] = (id >> b) & 1
 
     return vec
 

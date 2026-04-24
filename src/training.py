@@ -50,7 +50,7 @@ class Training:
         print("X_train.shape:", tuple(self.X_train.shape))
         print("Y_train.shape:", tuple(self.Y_train.shape))
 
-    def report(self, epoch, loss):
+    def report(self, epoch, loss, hook):
         if epoch % self.config.report_interval != self.config.report_interval - 1:
             return
 
@@ -69,6 +69,10 @@ class Training:
             for (metric_name, metric_value) in out.items():
                 self.run.track(metric_value, name=metric_name, step=epoch, context={"subset":"test"})
 
+        if hook is not None:
+            for (metric_name, metric_value) in hook(self.model):
+                self.run.track(metric_value, name=metric_name, step=epoch, context={"subset":"hook"})
+
     def save_checkpoint(self, epoch):
         last = epoch == self.config.epochs - 1
         regular = epoch % self.config.save_interval == self.config.save_interval - 1
@@ -76,7 +80,7 @@ class Training:
             save_checkpoint(self._dir, self.model, self.config, epoch, self.optimizer)
 
 
-    def train(self) -> None:
+    def train(self, hook = None) -> None:
         criterion = torch.nn.CrossEntropyLoss()
 
         self._train_start = time.time()
@@ -86,7 +90,7 @@ class Training:
             loss.backward()
             self.optimizer.step()
 
-            self.report(epoch, loss)
+            self.report(epoch, loss, hook)
             self.save_checkpoint(epoch)
 
         self.run.close()
