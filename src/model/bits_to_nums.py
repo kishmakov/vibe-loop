@@ -16,7 +16,7 @@ class BitsToNumsConfig:
         self.nums = 1 << self.bits
 
 
-class BitsToNumsNet(BaseModel, nn.Module):
+class BitsToNumsNet(BaseModel):
     def __init__(self, config: BitsToNumsConfig):
         super().__init__()
         self._config = config
@@ -62,7 +62,7 @@ class BitsToNumsNet(BaseModel, nn.Module):
         }
 
     def get_name(self) -> str:
-        return f"B{self.config.bits} to N{self.config.nums} with H{self.config.hidden}"
+        return f"B{self.config.bits}N{self.config.nums}H{self.config.hidden}"
 
 def _get_bits_vector(id: int, bits: int) -> torch.Tensor:
     vec = torch.zeros(bits)

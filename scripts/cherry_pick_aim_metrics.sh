@@ -9,9 +9,10 @@ if [ "$#" -lt 1 ]; then
   exit 1
 fi
 
-# Create if doesn't exist
-uv run aim init --repo "$DST_REPO" >/dev/null 2>&1 || true
+# echo "Init Aim repo at $DST_REPO if it doesn't exist..."
+# uv run aim init --repo "$DST_REPO" >/dev/null 2>&1 || true
 
-# Runs written by a finished training job are left locked; close them first.
-uv run aim runs --repo "$SRC_REPO" close --yes "$@"
-uv run aim runs --repo "$SRC_REPO" cp --destination "$DST_REPO" "$@"
+echo "Removing locks from runs in $SRC_REPO..."
+timeout 30s uv run aim runs --repo "$SRC_REPO" close --yes "$@"
+echo "Copying runs from $SRC_REPO to $DST_REPO..."
+timeout 30s uv run aim runs --repo "$SRC_REPO" cp --destination "$DST_REPO" "$@"

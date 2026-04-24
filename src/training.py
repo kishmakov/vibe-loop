@@ -1,5 +1,6 @@
 import aim
 import math
+import pathlib
 import time
 import torch
 
@@ -15,6 +16,7 @@ class TrainingConfig:
     lr: float = 1e-3
     seed: int = 239
     report_interval: int = 10
+    save_interval: int = 10000
     device: str = "cuda"
 
 
@@ -23,9 +25,11 @@ class Training:
         self.config = config
         self.model = model
         self._train_start: float = 0.0
+        self._solved = False
+        self._dir = pathlib.Path('/tmp/trn')
 
         # Initialize a new run
-        self.run = aim.Run(repo='/tmp/trn')
+        self.run = aim.Run(repo=self._dir)
         self.run.name = model.get_name() + " @ " + config.device
         self.run["model"] = self.model.config.__dict__
         self.run["training"] = self.config.__dict__
@@ -40,6 +44,8 @@ class Training:
         self.X_test, self.Y_test = self.model.get_test_batch()
         self.X_test = self.X_test.to(config.device)
         self.Y_test = self.Y_test.to(config.device)
+
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config.lr)
 
         print("X_train.shape:", tuple(self.X_train.shape))
         print("Y_train.shape:", tuple(self.Y_train.shape))
@@ -56,27 +62,32 @@ class Training:
 
         with torch.no_grad():
             out = self.model.get_test_metrics(self.X_test, self.Y_test)
+            if not self._solved and out["acc"] > 0.999999:
+                self._solved = True
+                print(f"Solved on epoch={epoch}")
 
             for (metric_name, metric_value) in out.items():
                 self.run.track(metric_value, name=metric_name, step=epoch, context={"subset":"test"})
 
+    def save_checkpoint(self, epoch):
+        last = epoch == self.config.epochs - 1
+        regular = epoch % self.config.save_interval == self.config.save_interval - 1
+        if last or regular:
+            save_checkpoint(self._dir, self.model, self.config, epoch, self.optimizer)
+
+
     def train(self) -> None:
         criterion = torch.nn.CrossEntropyLoss()
-        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.config.lr)
 
         self._train_start = time.time()
         for epoch in range(self.config.epochs):
-            optimizer.zero_grad()
+            self.optimizer.zero_grad()
             loss = criterion(self.model(self.X_train), self.Y_train)
             loss.backward()
-            optimizer.step()
+            self.optimizer.step()
+
             self.report(epoch, loss)
+            self.save_checkpoint(epoch)
 
-        save_checkpoint(self.model, optimizer, self.model.config, self.config.epochs, "data/model.pt")
         self.run.close()
-
-
-
-
-
 

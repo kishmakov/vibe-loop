@@ -1,9 +1,10 @@
 import torch
+import torch.nn as nn
 
 from abc import ABC, abstractmethod
 
 
-class BaseModel(ABC):
+class BaseModel(ABC, nn.Module):
     """Interface every trainable model must implement."""
 
     @property

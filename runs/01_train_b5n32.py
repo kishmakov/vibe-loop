@@ -9,8 +9,8 @@ from src.training import TrainingConfig, Training
 
 
 if __name__ == "__main__":
-    model_config = BitsToNumsConfig(bits=4)
-    training_config = TrainingConfig(epochs=100000, device="cuda")
+    model_config = BitsToNumsConfig(bits=5)
+    training_config = TrainingConfig(epochs=500000, device="cuda")
 
     model = BitsToNumsNet(model_config)
     training = Training(training_config, model)
