@@ -59,6 +59,7 @@ class Training:
             self.report(epoch, loss)
 
         save_checkpoint(self.model, optimizer, self.model.config, self.config.epochs, "data/model.pt")
+        self.run.close()
 
 
 

@@ -1,5 +1,6 @@
 # Weights
 *.pt
+data
 
 # Caches
 *.npy
