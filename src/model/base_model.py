@@ -36,3 +36,8 @@ class BaseModel(ABC):
     def get_test_metrics(self, x: torch.Tensor, y: torch.Tensor) -> dict[str, float]:
         """Compute test metrics."""
         ...
+
+    @abstractmethod
+    def get_name(self) -> str:
+        """Compute short name of the model."""
+        ...

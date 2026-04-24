@@ -61,6 +61,8 @@ class BitsToNumsNet(BaseModel, nn.Module):
             "acc": (pred_idx == y.argmax(dim=-1)).float().mean().item(),
         }
 
+    def get_name(self) -> str:
+        return f"B{self.config.bits} to N{self.config.nums} with H{self.config.hidden}"
 
 def _get_bits_vector(id: int, bits: int) -> torch.Tensor:
     vec = torch.zeros(bits)

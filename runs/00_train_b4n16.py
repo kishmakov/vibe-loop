@@ -10,7 +10,7 @@ from src.training import TrainingConfig, Training
 
 if __name__ == "__main__":
     model_config = BitsToNumsConfig(bits=4)
-    training_config = TrainingConfig(epochs=600000)
+    training_config = TrainingConfig(epochs=60000, device="cpu")
 
     model = BitsToNumsNet(model_config)
     training = Training(training_config, model)
