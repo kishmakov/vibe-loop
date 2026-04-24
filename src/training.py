@@ -7,7 +7,7 @@ import torch
 from dataclasses import dataclass
 
 from src.model.base_model import BaseModel
-from src.utils import save_checkpoint
+from src.utils import save_checkpoint, load_model
 
 
 @dataclass
@@ -21,7 +21,7 @@ class TrainingConfig:
 
 
 class Training:
-    def __init__(self, config: TrainingConfig, model: BaseModel):
+    def __init__(self, config: TrainingConfig, model: BaseModel, model_weights: pathlib.Path = None):
         self.config = config
         self.model = model
         self._train_start: float = 0.0
@@ -34,7 +34,11 @@ class Training:
         self.run["model"] = self.model.config.__dict__
         self.run["training"] = self.config.__dict__
 
-        model.init(config.seed)
+        if (model_weights is not None):
+            self.model = load_model(model_weights, type(model), type(model.config))
+        else:
+            model.init(config.seed)
+
         self.model.to(config.device)
 
         self.X_train, self.Y_train = self.model.get_train_batch()
